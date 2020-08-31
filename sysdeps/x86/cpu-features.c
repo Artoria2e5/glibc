@@ -125,9 +125,9 @@ get_common_indices (struct cpu_features *cpu_features,
 		cpu_features->feature[index_arch_AVX2_Usable]
 		  |= bit_arch_AVX2_Usable;
 
-	        /* Unaligned load with 256-bit AVX registers are faster on
-	           Intel/AMD processors with AVX2.  */
-	        cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
+		/* Unaligned load with 256-bit AVX registers are faster on
+		   Intel/AMD processors with AVX2.  */
+		cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
 		  |= bit_arch_AVX_Fast_Unaligned_Load;
 	      }
 	      /* Determine if FMA is usable.  */
@@ -378,7 +378,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 	    case 0x96:
 	    case 0x9c:
 	      /* Enable rep string instructions, unaligned load, unaligned
-	         copy, pminub and avoid SSE 4.2 on Tremont.  */
+		 copy, pminub and avoid SSE 4.2 on Tremont.  */
 	      cpu_features->feature[index_arch_Fast_Rep_String]
 		|= (bit_arch_Fast_Rep_String
 		    | bit_arch_Fast_Unaligned_Load
@@ -435,7 +435,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 
 
       /* Since AVX512ER is unique to Xeon Phi, set Prefer_No_VZEROUPPER
-         if AVX512ER is available.  Don't use AVX512 to avoid lower CPU
+	 if AVX512ER is available.  Don't use AVX512 to avoid lower CPU
 	 frequency if AVX512ER isn't available.  */
       if (CPU_FEATURES_CPU_P (cpu_features, AVX512ER))
 	cpu_features->feature[index_arch_Prefer_No_VZEROUPPER]
@@ -498,43 +498,43 @@ init_cpu_features (struct cpu_features *cpu_features)
 
       model += extended_model;
       if (family == 0x6)
-        {
-          if (model == 0xf || model == 0x19)
-            {
-              cpu_features->feature[index_arch_AVX_Usable]
-                &= (~bit_arch_AVX_Usable
-                & ~bit_arch_AVX2_Usable);
+	{
+	  if (model == 0xf || model == 0x19)
+	    {
+	      cpu_features->feature[index_arch_AVX_Usable]
+		&= (~bit_arch_AVX_Usable
+		& ~bit_arch_AVX2_Usable);
 
-              cpu_features->feature[index_arch_Slow_SSE4_2]
-                |= (bit_arch_Slow_SSE4_2);
+	      cpu_features->feature[index_arch_Slow_SSE4_2]
+		|= (bit_arch_Slow_SSE4_2);
 
-              cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
-                &= ~bit_arch_AVX_Fast_Unaligned_Load;
-            }
-        }
+	      cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
+		&= ~bit_arch_AVX_Fast_Unaligned_Load;
+	    }
+	}
       else if (family == 0x7)
-        {
-          if (model == 0x1b)
-            {
-              cpu_features->feature[index_arch_AVX_Usable]
-                &= (~bit_arch_AVX_Usable
-                & ~bit_arch_AVX2_Usable);
+	{
+	  if (model == 0x1b)
+	    {
+	      cpu_features->feature[index_arch_AVX_Usable]
+		&= (~bit_arch_AVX_Usable
+		& ~bit_arch_AVX2_Usable);
 
-              cpu_features->feature[index_arch_Slow_SSE4_2]
-                |= bit_arch_Slow_SSE4_2;
+	      cpu_features->feature[index_arch_Slow_SSE4_2]
+		|= bit_arch_Slow_SSE4_2;
 
-              cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
-                &= ~bit_arch_AVX_Fast_Unaligned_Load;
-           }
-         else if (model == 0x3b)
-           {
-             cpu_features->feature[index_arch_AVX_Usable]
-               &= (~bit_arch_AVX_Usable
-               & ~bit_arch_AVX2_Usable);
+	      cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
+		&= ~bit_arch_AVX_Fast_Unaligned_Load;
+	   }
+	 else if (model == 0x3b)
+	   {
+	     cpu_features->feature[index_arch_AVX_Usable]
+	       &= (~bit_arch_AVX_Usable
+	       & ~bit_arch_AVX2_Usable);
 
-               cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
-               &= ~bit_arch_AVX_Fast_Unaligned_Load;
-           }
+	       cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
+	       &= ~bit_arch_AVX_Fast_Unaligned_Load;
+	   }
        }
     }
   else
@@ -579,40 +579,46 @@ no_cpuid:
 
 #ifdef __x86_64__
   GLRO(dl_hwcap) = HWCAP_X86_64;
-  if (cpu_features->basic.kind == arch_kind_intel)
+  const char *platform = NULL;
+
+  if (CPU_FEATURES_ARCH_P(cpu_features, AVX512F_Usable) &&
+      CPU_FEATURES_CPU_P(cpu_features, AVX512CD))
     {
-      const char *platform = NULL;
-
-      if (CPU_FEATURES_ARCH_P (cpu_features, AVX512F_Usable)
-	  && CPU_FEATURES_CPU_P (cpu_features, AVX512CD))
+      if (CPU_FEATURES_CPU_P(cpu_features, AVX512ER))
 	{
-	  if (CPU_FEATURES_CPU_P (cpu_features, AVX512ER))
-	    {
-	      if (CPU_FEATURES_CPU_P (cpu_features, AVX512PF))
-		platform = "xeon_phi";
-	    }
-	  else
-	    {
-	      if (CPU_FEATURES_CPU_P (cpu_features, AVX512BW)
-		  && CPU_FEATURES_CPU_P (cpu_features, AVX512DQ)
-		  && CPU_FEATURES_CPU_P (cpu_features, AVX512VL))
-		GLRO(dl_hwcap) |= HWCAP_X86_AVX512_1;
-	    }
+	  if (CPU_FEATURES_CPU_P(cpu_features, AVX512PF))
+	    platform = "xeon_phi";
 	}
-
-      if (platform == NULL
-	  && CPU_FEATURES_ARCH_P (cpu_features, AVX2_Usable)
-	  && CPU_FEATURES_ARCH_P (cpu_features, FMA_Usable)
-	  && CPU_FEATURES_CPU_P (cpu_features, BMI1)
-	  && CPU_FEATURES_CPU_P (cpu_features, BMI2)
-	  && CPU_FEATURES_CPU_P (cpu_features, LZCNT)
-	  && CPU_FEATURES_CPU_P (cpu_features, MOVBE)
-	  && CPU_FEATURES_CPU_P (cpu_features, POPCNT))
-	platform = "haswell";
-
-      if (platform != NULL)
-	GLRO(dl_platform) = platform;
+      else
+	{
+	  if (CPU_FEATURES_CPU_P(cpu_features, AVX512BW)
+	      && CPU_FEATURES_CPU_P(cpu_features, AVX512DQ)
+	      && CPU_FEATURES_CPU_P(cpu_features, AVX512VL))
+	    GLRO(dl_hwcap) |= HWCAP_X86_AVX512_1;
+	}
     }
+
+  /* Haswell and Zen */
+  if (platform == NULL && CPU_FEATURES_ARCH_P(cpu_features, AVX_Usable)
+      && CPU_FEATURES_ARCH_P(cpu_features, FMA_Usable)
+      && CPU_FEATURES_CPU_P(cpu_features, BMI1)
+      && CPU_FEATURES_CPU_P(cpu_features, BMI2)
+      && CPU_FEATURES_CPU_P(cpu_features, LZCNT)
+      && CPU_FEATURES_CPU_P(cpu_features, MOVBE)
+      && CPU_FEATURES_CPU_P(cpu_features, POPCNT))
+    platform = "haswell";
+
+  /* Sandybridge and Bulldozer */
+  if (platform == NULL && CPU_FEATURES_ARCH_P(cpu_features, AVX_Usable)
+      && CPU_FEATURES_CPU_P(cpu_features, SSSE3)
+      && CPU_FEATURES_CPU_P(cpu_features, SSE4_1)
+      && CPU_FEATURES_CPU_P(cpu_features, SSE4_2)
+      && CPU_FEATURES_CPU_P(cpu_features, LZCNT)
+      && CPU_FEATURES_CPU_P(cpu_features, POPCNT))
+    platform = "avx_popcnt";
+
+  if (platform != NULL)
+    GLRO(dl_platform) = platform;
 #else
   GLRO(dl_hwcap) = 0;
   if (CPU_FEATURES_CPU_P (cpu_features, SSE2))

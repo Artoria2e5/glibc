@@ -62,7 +62,7 @@ PROCINFO_CLASS const char _dl_x86_hwcap_flags[3][9]
 #endif
 #ifndef PROCINFO_DECL
 = {
-    "sse2", "x86_64", "avx512_1"
+    "sse2", "x86_64", "avx512_1" /* AVX512BW, DQ, VL */
   }
 #endif
 #if !defined SHARED || defined PROCINFO_DECL
@@ -74,11 +74,14 @@ PROCINFO_CLASS const char _dl_x86_hwcap_flags[3][9]
 #if !defined PROCINFO_DECL && defined SHARED
   ._dl_x86_platforms
 #else
-PROCINFO_CLASS const char _dl_x86_platforms[4][9]
+PROCINFO_CLASS const char _dl_x86_platforms[5][9]
 #endif
 #ifndef PROCINFO_DECL
 = {
-    "i586", "i686", "haswell", "xeon_phi"
+    "i586", "i686",
+    "avx_pclmul", /* Early 2010s (sandybridge / bdver1) */
+    "haswell", /* Mid 2010s (haswell sans RDRND) */
+    "xeon_phi" /* Xeon Phi (AVX512ER, PF) */
   }
 #endif
 #if !defined SHARED || defined PROCINFO_DECL

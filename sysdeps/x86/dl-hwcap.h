@@ -22,7 +22,7 @@
 /* Since ldconfig processes both i386 and x86-64 libraries, it needs
    to cover all platforms and hardware capabilities.  */
 # define HWCAP_PLATFORMS_START	0
-# define HWCAP_PLATFORMS_COUNT	4
+# define HWCAP_PLATFORMS_COUNT	5
 # define HWCAP_START		0
 # define HWCAP_COUNT		3
 # define HWCAP_IMPORTANT \
@@ -30,7 +30,7 @@
 #elif defined __x86_64__
 /* For 64 bit, only cover x86-64 platforms and capabilities.  */
 # define HWCAP_PLATFORMS_START	2
-# define HWCAP_PLATFORMS_COUNT	4
+# define HWCAP_PLATFORMS_COUNT	5
 # define HWCAP_START		1
 # define HWCAP_COUNT		3
 # define HWCAP_IMPORTANT	(HWCAP_X86_64 | HWCAP_X86_AVX512_1)
